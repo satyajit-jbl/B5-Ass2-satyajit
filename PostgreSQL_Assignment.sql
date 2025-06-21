@@ -73,5 +73,38 @@ LEFT JOIN sightings ON species.species_id = sightings.species_id
 WHERE sightings.species_id IS NULL;
 
 --Problem-6
---Show the most recent 2 sightings (name + common_name)
+--Show the most recent 2 sightings 
+
+SELECT species.common_name, sightings.sighting_time, rangers.name
+FROM sightings
+JOIN species ON sightings.species_id = species.species_id
+JOIN rangers ON sightings.ranger_id = rangers.ranger_id
+ORDER BY sightings.sighting_time DESC
+LIMIT 2
+
+--Problem-7
+--Update all species discovered before year 1800 to 'Historic'
+
+UPDATE species
+SET conservation_status = 'Historic'
+WHERE discovery_date < '1800-01-01'
+
+--Problem-8
+--Label each sighting's time of day
+
+SELECT sighting_id,
+    case
+        WHEN EXTRACT(HOUR from sighting_time)<12 THEN 'Morning'
+        WHEN EXTRACT(HOUR from sighting_time)<17 THEN 'Afternoon'
+        else 'Evening'
+    END as time_of_day
+FROM sightings;
+
+--Problem-9
+--Delete rangers who have never sighted any species
+
+DELETE FROM rangers
+WHERE ranger_id NOT IN(
+    SELECT DISTINCT ranger_id FROM sightings
+);
 
